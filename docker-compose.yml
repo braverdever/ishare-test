@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=ishare_tasks
+      - DB_SSL_MODE=disable
+      - JWT_SECRET=your_super_secret_jwt_key_here_make_it_long_and_random
+      - JWT_ISSUER=ishare-task-api
+      - JWT_AUDIENCE=ishare-clients
+      - JWT_EXPIRATION_HOURS=24
+      - OAUTH_CLIENT_ID=test-client
+      - OAUTH_CLIENT_SECRET=test-secret
+      - OAUTH_REDIRECT_URI=http://localhost:8080/oauth/callback
+      - SERVER_PORT=8080
+      - ENVIRONMENT=development
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - ishare-network
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=ishare_tasks
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - ishare-network
+
+volumes:
+  postgres_data:
+
+networks:
+  ishare-network:
+    driver: bridge 
