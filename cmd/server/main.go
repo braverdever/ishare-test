@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	_ "ishare-task-api/docs"
 	"ishare-task-api/internal/config"
 	"ishare-task-api/internal/database"
 	"ishare-task-api/internal/routes"
@@ -65,4 +66,4 @@ func main() {
 	if err := router.Run(":" + port); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
-} 
+}

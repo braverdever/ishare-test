@@ -106,7 +106,7 @@ All task endpoints require valid JWT token in Authorization header: `Authorizati
 ### API Documentation
 
 - Swagger UI: `http://localhost:8080/swagger/index.html`
-- API Docs: `http://localhost:8080/swagger/doc.json`
+- API Docs: `http://localhost:8080/swagger/swagger.json`
 
 ## Authentication Flow
 
@@ -225,19 +225,3 @@ go test ./...
 ```bash
 go build -o bin/server cmd/server/main.go
 ```
-
-## License
-
-This project is licensed under the MIT License.
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
-
-## Support
-
-For support and questions, please refer to the iSHARE developer portal at [dev.ishare.eu](https://dev.ishare.eu). 

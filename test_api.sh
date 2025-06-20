@@ -45,8 +45,7 @@ LOGIN_RESPONSE=$(curl -s -X POST "$BASE_URL/oauth/login" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "email=test@example.com&password=password123&client_id=$CLIENT_ID&redirect_uri=$REDIRECT_URI&scope=tasks:read%20tasks:write&state=test-state")
 
-# Extract authorization code from the redirect URL
-AUTH_CODE=$(echo $LOGIN_RESPONSE | grep -o 'code=[^&]*' | cut -d'=' -f2)
+AUTH_CODE=$(echo $LOGIN_RESPONSE | jq -r '.code')
 echo "Authorization Code: $AUTH_CODE"
 
 # Test 6: Exchange authorization code for access token
@@ -167,9 +166,3 @@ echo "✅ All tests completed!"
 echo ""
 echo "📚 API Documentation available at: $BASE_URL/swagger/index.html"
 echo "🔗 Health check: $BASE_URL/health"
-echo ""
-echo "💡 Tips:"
-echo "- Use the Swagger UI to explore the API interactively"
-echo "- The OAuth flow requires user interaction in a browser"
-echo "- All task endpoints require valid Bearer token authentication"
-echo "- JWS tokens are signed and verified for security" 

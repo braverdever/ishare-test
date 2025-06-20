@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strings"
 
-	"ishare-task-api/internal/config"
 	"ishare-task-api/internal/models"
 
 	"github.com/gin-gonic/gin"
@@ -159,7 +158,7 @@ func GetAccessTokenFromContext(c *gin.Context) (*models.AccessToken, bool) {
 // ValidateUserOwnership middleware ensures the user owns the resource
 func (a *AuthMiddleware) ValidateUserOwnership() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		user, exists := GetUserFromContext(c)
+		_, exists := GetUserFromContext(c)
 		if !exists {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": "Authentication required",
@@ -204,4 +203,4 @@ func (a *AuthMiddleware) ValidateUserOwnership() gin.HandlerFunc {
 
 		c.Next()
 	}
-} 
+}

@@ -39,6 +39,7 @@ Authorization: Bearer <jws_token>
 Initiates the OAuth 2.0 authorization code flow.
 
 **Query Parameters:**
+
 - `response_type` (required): Must be "code"
 - `client_id` (required): OAuth client ID
 - `redirect_uri` (required): Redirect URI after authorization
@@ -46,6 +47,7 @@ Initiates the OAuth 2.0 authorization code flow.
 - `state` (optional): State parameter for CSRF protection
 
 **Example:**
+
 ```bash
 curl "http://localhost:8080/oauth/authorize?response_type=code&client_id=test-client&redirect_uri=http://localhost:8080/oauth/callback&scope=tasks:read%20tasks:write&state=random-state"
 ```
@@ -59,6 +61,7 @@ curl "http://localhost:8080/oauth/authorize?response_type=code&client_id=test-cl
 Exchanges authorization code for access token.
 
 **Form Data:**
+
 - `grant_type` (required): Must be "authorization_code"
 - `code` (required): Authorization code from previous step
 - `redirect_uri` (required): Same redirect URI used in authorization
@@ -66,6 +69,7 @@ Exchanges authorization code for access token.
 - `client_secret` (required): OAuth client secret
 
 **Example:**
+
 ```bash
 curl -X POST "http://localhost:8080/oauth/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
@@ -73,6 +77,7 @@ curl -X POST "http://localhost:8080/oauth/token" \
 ```
 
 **Response:**
+
 ```json
 {
   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -89,6 +94,7 @@ curl -X POST "http://localhost:8080/oauth/token" \
 Creates a new user account.
 
 **Request Body:**
+
 ```json
 {
   "email": "user@example.com",
@@ -97,6 +103,7 @@ Creates a new user account.
 ```
 
 **Example:**
+
 ```bash
 curl -X POST "http://localhost:8080/oauth/register" \
   -H "Content-Type: application/json" \
@@ -107,6 +114,7 @@ curl -X POST "http://localhost:8080/oauth/register" \
 ```
 
 **Response:**
+
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
@@ -127,12 +135,14 @@ All task endpoints require Bearer token authentication.
 Creates a new task.
 
 **Headers:**
+
 ```
 Authorization: Bearer <access_token>
 Content-Type: application/json
 ```
 
 **Request Body:**
+
 ```json
 {
   "title": "Complete API Documentation",
@@ -142,6 +152,7 @@ Content-Type: application/json
 ```
 
 **Example:**
+
 ```bash
 curl -X POST "http://localhost:8080/tasks" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
@@ -154,6 +165,7 @@ curl -X POST "http://localhost:8080/tasks" \
 ```
 
 **Response:**
+
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
@@ -172,22 +184,26 @@ curl -X POST "http://localhost:8080/tasks" \
 Retrieves all tasks with optional filtering and pagination.
 
 **Headers:**
+
 ```
 Authorization: Bearer <access_token>
 ```
 
 **Query Parameters:**
+
 - `status` (optional): Filter by status (e.g., "pending", "completed")
 - `page` (optional): Page number (default: 1)
 - `limit` (optional): Items per page (default: 10, max: 100)
 
 **Example:**
+
 ```bash
 curl -X GET "http://localhost:8080/tasks?status=pending&page=1&limit=10" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
 **Response:**
+
 ```json
 {
   "tasks": [
@@ -211,17 +227,20 @@ curl -X GET "http://localhost:8080/tasks?status=pending&page=1&limit=10" \
 Retrieves a specific task by ID.
 
 **Headers:**
+
 ```
 Authorization: Bearer <access_token>
 ```
 
 **Example:**
+
 ```bash
 curl -X GET "http://localhost:8080/tasks/550e8400-e29b-41d4-a716-446655440000" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
 **Response:**
+
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
@@ -240,12 +259,14 @@ curl -X GET "http://localhost:8080/tasks/550e8400-e29b-41d4-a716-446655440000" \
 Updates a specific task.
 
 **Headers:**
+
 ```
 Authorization: Bearer <access_token>
 Content-Type: application/json
 ```
 
 **Request Body:**
+
 ```json
 {
   "title": "Complete API Documentation - Updated",
@@ -255,6 +276,7 @@ Content-Type: application/json
 ```
 
 **Example:**
+
 ```bash
 curl -X PUT "http://localhost:8080/tasks/550e8400-e29b-41d4-a716-446655440000" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
@@ -267,6 +289,7 @@ curl -X PUT "http://localhost:8080/tasks/550e8400-e29b-41d4-a716-446655440000" \
 ```
 
 **Response:**
+
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
@@ -285,17 +308,20 @@ curl -X PUT "http://localhost:8080/tasks/550e8400-e29b-41d4-a716-446655440000" \
 Deletes a specific task.
 
 **Headers:**
+
 ```
 Authorization: Bearer <access_token>
 ```
 
 **Example:**
+
 ```bash
 curl -X DELETE "http://localhost:8080/tasks/550e8400-e29b-41d4-a716-446655440000" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Task deleted successfully"
@@ -311,11 +337,13 @@ curl -X DELETE "http://localhost:8080/tasks/550e8400-e29b-41d4-a716-446655440000
 Returns the health status of the API.
 
 **Example:**
+
 ```bash
 curl -X GET "http://localhost:8080/health"
 ```
 
 **Response:**
+
 ```json
 {
   "status": "ok",
@@ -330,11 +358,13 @@ curl -X GET "http://localhost:8080/health"
 Returns API information and available endpoints.
 
 **Example:**
+
 ```bash
 curl -X GET "http://localhost:8080/"
 ```
 
 **Response:**
+
 ```json
 {
   "name": "iSHARE Task Management API",
@@ -426,6 +456,7 @@ header.payload.signature
 ```
 
 ### Header
+
 ```json
 {
   "alg": "HS256",
@@ -434,6 +465,7 @@ header.payload.signature
 ```
 
 ### Payload
+
 ```json
 {
   "sub": "user_id",
@@ -490,4 +522,4 @@ http://localhost:8080/swagger/index.html
 
 ## Support
 
-For questions and support, refer to the iSHARE developer portal at [dev.ishare.eu](https://dev.ishare.eu). 
+For questions and support, refer to the iSHARE developer portal at [dev.ishare.eu](https://dev.ishare.eu).

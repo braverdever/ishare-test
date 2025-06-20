@@ -1,0 +1,547 @@
+basePath: /
+definitions:
+  auth.TokenResponse:
+    properties:
+      access_token:
+        type: string
+      expires_in:
+        type: integer
+      refresh_token:
+        type: string
+      scope:
+        type: string
+      token_type:
+        type: string
+    type: object
+  models.CreateTaskRequest:
+    properties:
+      description:
+        example: Write comprehensive documentation for the API
+        type: string
+      status:
+        example: pending
+        type: string
+      title:
+        example: Complete project documentation
+        type: string
+    required:
+    - title
+    type: object
+  models.CreateUserRequest:
+    properties:
+      email:
+        example: user@example.com
+        type: string
+      password:
+        example: password123
+        minLength: 6
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  models.TaskResponse:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.TasksResponse:
+    properties:
+      tasks:
+        items:
+          $ref: '#/definitions/models.TaskResponse'
+        type: array
+      total:
+        type: integer
+    type: object
+  models.UpdateTaskRequest:
+    properties:
+      description:
+        example: Write comprehensive documentation for the API
+        type: string
+      status:
+        example: completed
+        type: string
+      title:
+        example: Complete project documentation
+        type: string
+    type: object
+  models.UserResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: A secure REST API for task management with OAuth 2.0 and JWS token
+    signing
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: iSHARE Task Management API
+  version: "1.0"
+paths:
+  /oauth/authorize:
+    get:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Initiates OAuth 2.0 authorization code flow
+      parameters:
+      - description: Must be 'code'
+        example: code
+        in: formData
+        name: response_type
+        required: true
+        type: string
+      - description: OAuth client ID
+        example: test-client
+        in: formData
+        name: client_id
+        required: true
+        type: string
+      - description: Redirect URI
+        example: http://localhost:8080/oauth/callback
+        in: formData
+        name: redirect_uri
+        required: true
+        type: string
+      - description: Requested scopes
+        example: tasks:read tasks:write
+        in: formData
+        name: scope
+        type: string
+      - description: State parameter for CSRF protection
+        example: random-state
+        in: formData
+        name: state
+        type: string
+      produces:
+      - text/html
+      responses:
+        "200":
+          description: Authorization page
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: OAuth 2.0 Authorization
+      tags:
+      - OAuth
+  /oauth/callback:
+    get:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Handles OAuth callback with authorization code
+      parameters:
+      - description: Authorization code
+        example: auth-code-here
+        in: query
+        name: code
+        required: true
+        type: string
+      - description: State parameter
+        example: random-state
+        in: query
+        name: state
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Callback response
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: OAuth Callback
+      tags:
+      - OAuth
+  /oauth/cleanup:
+    post:
+      description: Removes expired authorization codes and access tokens
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Cleanup completed
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Cleanup Expired Tokens
+      tags:
+      - OAuth
+  /oauth/login:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Authenticates user and creates authorization code
+      parameters:
+      - description: User email
+        example: user@example.com
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: User password
+        example: password123
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: OAuth client ID
+        example: test-client
+        in: formData
+        name: client_id
+        required: true
+        type: string
+      - description: Redirect URI
+        example: http://localhost:8080/oauth/callback
+        in: formData
+        name: redirect_uri
+        required: true
+        type: string
+      - description: Requested scopes
+        example: tasks:read tasks:write
+        in: formData
+        name: scope
+        type: string
+      - description: State parameter
+        example: random-state
+        in: formData
+        name: state
+        type: string
+      produces:
+      - application/json
+      responses:
+        "302":
+          description: Redirect to callback with authorization code
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      summary: User Login
+      tags:
+      - OAuth
+  /oauth/register:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user account
+      parameters:
+      - description: User registration data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created successfully
+          schema:
+            $ref: '#/definitions/models.UserResponse'
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: User already exists
+          schema:
+            additionalProperties: true
+            type: object
+      summary: User Registration
+      tags:
+      - OAuth
+  /oauth/token:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Exchanges authorization code for access token
+      parameters:
+      - description: Must be 'authorization_code'
+        example: authorization_code
+        in: formData
+        name: grant_type
+        required: true
+        type: string
+      - description: Authorization code
+        example: auth-code-here
+        in: formData
+        name: code
+        required: true
+        type: string
+      - description: Redirect URI
+        example: http://localhost:8080/oauth/callback
+        in: formData
+        name: redirect_uri
+        required: true
+        type: string
+      - description: OAuth client ID
+        example: test-client
+        in: formData
+        name: client_id
+        required: true
+        type: string
+      - description: OAuth client secret
+        example: test-secret
+        in: formData
+        name: client_secret
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Access token response
+          schema:
+            $ref: '#/definitions/auth.TokenResponse'
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      summary: OAuth 2.0 Token
+      tags:
+      - OAuth
+  /tasks:
+    get:
+      description: Retrieves all tasks with optional filtering and pagination
+      parameters:
+      - description: Filter by status
+        example: pending
+        in: query
+        name: status
+        type: string
+      - description: Page number
+        example: 1
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        example: 10
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Tasks retrieved successfully
+          schema:
+            $ref: '#/definitions/models.TasksResponse'
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List Tasks
+      tags:
+      - Tasks
+    post:
+      consumes:
+      - application/json
+      description: Creates a new task
+      parameters:
+      - description: Task data
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Task created successfully
+          schema:
+            $ref: '#/definitions/models.TaskResponse'
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create Task
+      tags:
+      - Tasks
+  /tasks/{id}:
+    delete:
+      description: Deletes a specific task by ID
+      parameters:
+      - description: Task ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Task deleted successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Task not found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete Task
+      tags:
+      - Tasks
+    get:
+      description: Retrieves a specific task by ID
+      parameters:
+      - description: Task ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Task retrieved successfully
+          schema:
+            $ref: '#/definitions/models.TaskResponse'
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Task not found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get Task
+      tags:
+      - Tasks
+    put:
+      consumes:
+      - application/json
+      description: Updates a specific task by ID
+      parameters:
+      - description: Task ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Task update data
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Task updated successfully
+          schema:
+            $ref: '#/definitions/models.TaskResponse'
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Task not found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update Task
+      tags:
+      - Tasks
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

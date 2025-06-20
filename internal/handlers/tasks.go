@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"ishare-task-api/internal/auth"
 	"ishare-task-api/internal/models"
 
 	"github.com/gin-gonic/gin"
@@ -348,4 +347,4 @@ func (h *TaskHandler) ListTasks(c *gin.Context) {
 		Tasks: taskResponses,
 		Total: total,
 	})
-} 
+}
