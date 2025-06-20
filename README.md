@@ -217,7 +217,7 @@ ishare-task-api/
 ### Running Tests
 
 ```bash
-go test ./...
+./test_api.sh
 ```
 
 ### Building for Production
